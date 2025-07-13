@@ -25,15 +25,17 @@ venv/
 env/
 ENV/
 
-# Models (keep locally, don't push)
+# All folders (keep locally, don't push)
 app/models/
 models/
-
-# Dataset (keep locally, don't push)
 liar_dataset/
-
-# Logs
 logs/
+
+# Large files
+*.pkl
+*.safetensors
+*.bin
+*.pt
 *.log
 
 # IDE
@@ -48,6 +50,3 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
-
-# Docker
-.dockerignore
