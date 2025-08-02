@@ -228,6 +228,7 @@ mkdir -p liar_dataset
 ### **4️⃣ Train Models**
 ```bash
 # Train baseline model (2-3 minutes)
+make baseline
 
 # Train hybrid model (10-15 minutes)
 make hybrid
