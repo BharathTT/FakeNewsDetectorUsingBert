@@ -10,3 +10,5 @@ requests
 pydantic
 psutil
 accelerate
+newspaper3k
+beautifulsoup4

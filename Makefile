@@ -9,6 +9,9 @@ test:
 baseline:
 	cd app && python3 -c "from train import train_baseline; train_baseline()"
 
+hybrid:
+	cd app && python3 -c "from train import train_hybrid; train_hybrid()"
+
 train:
 	cd app && python3 train.py
 

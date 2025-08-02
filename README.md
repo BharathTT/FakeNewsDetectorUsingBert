@@ -50,10 +50,15 @@ The Fake News Detection System is an open-source, end-to-end platform to classif
 ## Architecture
 
 ```plaintext
-+-----------+      +-------------+      +------------+      +------------------+
-|  User UI  | ---> |  API Layer  | ---> |  Model     | ---> |  Prediction      |
-| (Flask)   |      | (FastAPI)   |      |  Inference |      |  & Logging       |
-+-----------+      +-------------+      +------------+      +------------------+
++-----------+      +-------------+      +------------------+      +------------------+
+|  User UI  | ---> |  API Layer  | ---> |  Hybrid Model    | ---> |  Prediction      |
+| (Flask)   |      | (FastAPI)   |      | BERT+RandomForest|      |  & Logging       |
++-----------+      +-------------+      +------------------+      +------------------+
+                                        |  Baseline Model  |
+                                        | TF-IDF+LogReg    |
+                                        +------------------+
+                                        |  Keyword Match   |
+                                        +------------------+
 ```
 
 **Project Structure:**
@@ -85,7 +90,8 @@ Components:
 
 * **Frontend**: Flask with inline HTML (app/web.py)
 * **Backend**: FastAPI prediction API (app/api.py)
-* **Model**: BERT transformer + logistic regression baseline
+* **Hybrid Model**: BERT embeddings + Random Forest classifier
+* **Baseline Model**: TF-IDF + Logistic Regression fallback
 * **Data**: LIAR dataset preprocessing (app/data.py)
 * **Training**: Unified training pipeline (app/train.py)
 
@@ -167,31 +173,32 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### **Step 3: Download LIAR Dataset**
+### **Step 3: Setup LIAR Dataset**
 ```bash
-# Create dataset directory
-mkdir -p liar_dataset
+# Use the provided setup script
+./setup_dataset.sh
 
-# Download dataset files
-wget -O liar_dataset/train.tsv https://raw.githubusercontent.com/thiagocastroferreira/FakeNewsCorpus/master/liar_dataset/train.tsv
-wget -O liar_dataset/valid.tsv https://raw.githubusercontent.com/thiagocastroferreira/FakeNewsCorpus/master/liar_dataset/valid.tsv
-wget -O liar_dataset/test.tsv https://raw.githubusercontent.com/thiagocastroferreira/FakeNewsCorpus/master/liar_dataset/test.tsv
+# Or manually create dataset directory
+mkdir -p liar_dataset
 ```
 
-**Alternative (Manual Download):**
-1. Go to [LIAR Dataset Repository](https://github.com/thiagocastroferreira/FakeNewsCorpus)
-2. Download `train.tsv`, `valid.tsv`, `test.tsv`
-3. Place files in `liar_dataset/` folder
+**Note**: Sample dataset files are included. For the full LIAR dataset:
+1. Visit the [original LIAR dataset paper](https://arxiv.org/abs/1705.00648)
+2. Request access to the complete dataset
+3. Replace sample files in `liar_dataset/` folder
 
 ### **Step 4: Train Models**
 ```bash
 # Train baseline model (2-3 minutes)
 make baseline
 
-# Train BERT model (30-60 minutes)
+# Train hybrid model (10-15 minutes)
+make hybrid
+
+# Train both models
 make train
 
-# Or train both
+# Or train directly
 python app/train.py
 ```
 
@@ -250,10 +257,11 @@ Try these example statements in the web interface:
 - ❌ **Fake**: "The moon is made of cheese"
 
 ### **Model Performance**
-- **Baseline Model**: 60.54% accuracy
-- **BERT Model**: 61.80% accuracy
-- **Training Time**: 30-60 minutes (BERT)
-- **Inference Time**: ~100ms per prediction
+- **Hybrid Model**: BERT embeddings + Random Forest (Primary)
+- **Baseline Model**: TF-IDF + Logistic Regression (Fallback)
+- **Keyword Model**: Simple pattern matching (Final fallback)
+- **Training Time**: 10-15 minutes (Hybrid), 2-3 minutes (Baseline)
+- **Inference Time**: ~200ms (Hybrid), ~50ms (Baseline)
 
 ---
 
@@ -312,47 +320,54 @@ clf.fit(embeddings, labels)
 
 | Model                        | Size | Notes                           |
 | ---------------------------- | ---- | ------------------------------- |
-| `bert-base-uncased`          | 110M | Good baseline                   |
-| `distilbert-base-uncased`    | 66M  | Faster inference                |
-| `sklearn.LogisticRegression` | \~1M | Simple, fast classical baseline |
+| **Hybrid (Primary)**         | 110M | BERT embeddings + Random Forest |
+| `bert-base-uncased`          | 110M | For feature extraction          |
+| `RandomForestClassifier`     | ~1M  | Non-linear classification       |
+| **Baseline (Fallback)**      | ~1M  | TF-IDF + Logistic Regression   |
+| **Keyword (Final Fallback)** | <1KB | Simple keyword matching         |
 
 ### Training Pipeline
 
+**Hybrid Model Training:**
 ```python
-from transformers import BertForSequenceClassification, Trainer, TrainingArguments
-from sklearn.utils.class_weight import compute_class_weight
+from transformers import BertTokenizer, BertModel
+from sklearn.ensemble import RandomForestClassifier
 import torch
 import numpy as np
 
-# Handle class imbalance in LIAR dataset
-class_weights = compute_class_weight('balanced', classes=np.unique(train_df['binary_label']), 
-                                   y=train_df['binary_label'])
-class_weights = torch.tensor(class_weights, dtype=torch.float)
+# Extract BERT embeddings
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+bert_model = BertModel.from_pretrained('bert-base-uncased')
 
-model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
-args = TrainingArguments(
-    output_dir='./models/liar_bert',
-    num_train_epochs=4,
-    per_device_train_batch_size=32,
-    per_device_eval_batch_size=64,
-    evaluation_strategy='epoch',
-    save_strategy='epoch',
-    logging_dir='./logs',
-    learning_rate=3e-5,
-    weight_decay=0.01,
-    warmup_steps=500,
-    load_best_model_at_end=True,
-    metric_for_best_model='f1',
-)
+def get_bert_embeddings(texts):
+    embeddings = []
+    for text in texts:
+        inputs = tokenizer(text, return_tensors='pt', max_length=128, truncation=True)
+        outputs = bert_model(**inputs)
+        # Use [CLS] token embedding
+        embedding = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
+        embeddings.append(embedding)
+    return np.array(embeddings)
 
-trainer = Trainer(
-    model=model,
-    args=args,
-    train_dataset=train_dataset,
-    eval_dataset=val_dataset,
-    compute_metrics=compute_metrics,
-)
-trainer.train()
+# Train Random Forest on BERT embeddings
+X_train = get_bert_embeddings(train_texts)
+rf_model = RandomForestClassifier(n_estimators=100, class_weight='balanced')
+rf_model.fit(X_train, train_labels)
+```
+
+**Prediction Flow:**
+```python
+# 1st Priority: Hybrid Model
+bert_embedding = get_bert_embeddings([text])
+prediction = rf_model.predict(bert_embedding)
+
+# 2nd Priority: Baseline Model  
+tfidf_vector = vectorizer.transform([text])
+prediction = logistic_model.predict(tfidf_vector)
+
+# 3rd Priority: Keyword Matching
+fake_score = count_fake_keywords(text)
+real_score = count_real_keywords(text)
 ```
 
 ### Hyperparameter Tuning
@@ -443,13 +458,15 @@ curl -X POST "http://localhost:8000/predict" \
 ```json
 {
   "label": "Real",
-  "confidence": 0.87
+  "confidence": 0.87,
+  "model": "hybrid"
 }
 ```
 
 **Response Fields:**
 - `label`: "Fake" or "Real"
 - `confidence`: Float between 0.0-1.0 (higher = more confident)
+- `model`: "hybrid", "baseline", or "keyword" (indicates which model was used)
 
 #### **GET /health**
 Check API health status.
@@ -462,7 +479,9 @@ curl http://localhost:8000/health
 **Response:**
 ```json
 {
-  "status": "healthy"
+  "status": "healthy",
+  "baseline_loaded": true,
+  "hybrid_loaded": true
 }
 ```
 
@@ -763,8 +782,9 @@ df -h .
 ```bash
 make install    # Install dependencies
 make test      # Run all tests
-make baseline  # Train baseline model only (fast)
-make train     # Train all models (baseline + BERT)
+make baseline  # Train baseline model only (2-3 min)
+make hybrid    # Train hybrid model only (10-15 min)
+make train     # Train all models (baseline + hybrid)
 make api       # Start API server
 make web       # Start web interface
 make docker    # Deploy with Docker
@@ -776,6 +796,7 @@ make clean     # Clean cache files
 # Training
 cd app && python train.py              # Train all models
 cd app && python -c "from train import train_baseline; train_baseline()"  # Baseline only
+cd app && python -c "from train import train_hybrid; train_hybrid()"      # Hybrid only
 
 # Testing
 cd app && python test.py               # Run tests

@@ -1,0 +1,251 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.result {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.result.fake {
+    background: #fee;
+    color: #c53030;
+    border: 2px solid #feb2b2;
+}
+
+.result.real {
+    background: #f0fff4;
+    color: #38a169;
+    border: 2px solid #9ae6b4;
+}
+
+.result.uncertain {
+    background: #fffbeb;
+    color: #d69e2e;
+    border: 2px solid #fbd38d;
+}
+
+.model-info {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+}
+
+.loading {
+    display: none;
+    color: #667eea;
+}
+
+.examples {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.examples h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.example {
+    background: #f7fafc;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.example:hover {
+    background: #edf2f7;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px;
+    background: #f7fafc;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin: 0;
+    border-radius: 0;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+input[type="url"] {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+input[type="url"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.article-title, .text-preview {
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: left;
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.read-more-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: background 0.3s;
+}
+
+.read-more-btn:hover {
+    background: #5a67d8;
+}
+
+.full-text {
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: left;
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+    line-height: 1.6;
+}
+
+.model-selector {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.model-selector label {
+    font-weight: 600;
+    margin-right: 10px;
+    color: #333;
+}
+
+.model-selector select {
+    padding: 8px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.model-selector select:focus {
+    outline: none;
+    border-color: #667eea;
+}

@@ -1,6 +1,7 @@
-from transformers import BertForSequenceClassification, BertTokenizer, Trainer, TrainingArguments
+from transformers import BertForSequenceClassification, BertTokenizer, BertModel
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
 import torch
@@ -53,53 +54,56 @@ def train_baseline():
     predictions = model.predict(X_test)
     print(classification_report(test_df['binary_label'], predictions, digits=4))
 
-def train_bert():
-    print("Training BERT...")
+def get_bert_embeddings(texts, tokenizer, model):
+    embeddings = []
+    model.eval()
+    with torch.no_grad():
+        for text in texts:
+            inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=128)
+            outputs = model(**inputs)
+            # Use [CLS] token embedding
+            embedding = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
+            embeddings.append(embedding)
+    return np.array(embeddings)
+
+def train_hybrid():
+    print("Training Hybrid BERT + Random Forest...")
     import os
+    import pickle
     os.makedirs('./models', exist_ok=True)
     
     train_df = preprocess_liar(load_liar_dataset('../liar_dataset/train.tsv'))
-    val_df = preprocess_liar(load_liar_dataset('../liar_dataset/valid.tsv'))
+    test_df = preprocess_liar(load_liar_dataset('../liar_dataset/test.tsv'))
     
+    # Load BERT model for embeddings
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    train_encodings = tokenizer(list(train_df['statement']), padding=True, truncation=True, max_length=128)
-    val_encodings = tokenizer(list(val_df['statement']), padding=True, truncation=True, max_length=128)
+    bert_model = BertModel.from_pretrained('bert-base-uncased')
     
-    train_dataset = LiarDataset(train_encodings, list(train_df['binary_label']))
-    val_dataset = LiarDataset(val_encodings, list(val_df['binary_label']))
+    # Get BERT embeddings
+    print("Extracting BERT embeddings...")
+    X_train = get_bert_embeddings(list(train_df['statement']), tokenizer, bert_model)
+    X_test = get_bert_embeddings(list(test_df['statement']), tokenizer, bert_model)
     
-    model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
-    args = TrainingArguments(
-        output_dir='./models/liar_bert',
-        num_train_epochs=2,  # Reduced for faster training
-        per_device_train_batch_size=16,  # Smaller batch for stability
-        per_device_eval_batch_size=32,
-        eval_strategy='epoch',
-        save_strategy='epoch',
-        logging_dir='./logs',
-        learning_rate=2e-5,  # Lower learning rate
-        weight_decay=0.01,
-        warmup_steps=100,  # Reduced warmup
-        load_best_model_at_end=True,
-        metric_for_best_model='f1',
-        logging_steps=50,
-        save_total_limit=2,
+    # Train Random Forest on BERT embeddings
+    rf_model = RandomForestClassifier(
+        n_estimators=100,
+        class_weight='balanced',
+        random_state=42,
+        n_jobs=-1
     )
+    rf_model.fit(X_train, train_df['binary_label'])
     
-    trainer = Trainer(
-        model=model,
-        args=args,
-        train_dataset=train_dataset,
-        eval_dataset=val_dataset,
-        compute_metrics=compute_metrics,
-    )
-    trainer.train()
+    # Save models
+    with open('./models/hybrid_model.pkl', 'wb') as f:
+        pickle.dump(rf_model, f)
+    tokenizer.save_pretrained('./models/bert_tokenizer')
+    bert_model.save_pretrained('./models/bert_embedder')
+    print("Hybrid model saved")
     
-    # Save the final model
-    model.save_pretrained('./models/liar_bert')
-    tokenizer.save_pretrained('./models/liar_bert')
-    print("BERT model saved")
+    # Evaluate
+    predictions = rf_model.predict(X_test)
+    print(classification_report(test_df['binary_label'], predictions, digits=4))
 
 if __name__ == "__main__":
     train_baseline()
-    train_bert()
+    train_hybrid()
