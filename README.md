@@ -91,6 +91,19 @@ Components:
 
 ---
 
+## 🧰 Features to be Added
+
+- URL-to-text conversion via `newspaper3k` or `BeautifulSoup`
+- Classification for news headlines only
+- Real-time API integration (Google News / NDTV RSS)
+- Web interface with input for text, headline, and URL
+- Explainability using **LIME** / **SHAP**
+- Model comparison dashboard (accuracy, F1-score)
+- Multilingual support (future scope)
+
+---
+
+
 ## Dataset
 
 **LIAR Dataset**: A benchmark dataset for fake news detection containing 12,836 human-labeled short statements from PolitiFact's API.
@@ -111,6 +124,18 @@ liar_dataset/
 ├── valid.tsv
 └── test.tsv
 ```
+
+## 🧠 Algorithms Used
+
+- Logistic Regression
+- Random Forest
+- Multinomial Naive Bayes
+- Support Vector Machine (SVM)
+- BERT (Bidirectional Encoder Representations from Transformers)
+- SVM + BERT embedding (hybrid approach planned)
+
+---
+
 
 **Preprocessing:**
 
@@ -263,6 +288,32 @@ encodings = tokenizer(list(train_df['statement']), padding=True, truncation=True
 * LIAR statements are typically short (avg ~18 words), so max_length=128 is sufficient.
 * Binary classification simplifies the 6-class problem while maintaining meaningful distinction.
 * All preprocessing functions are consolidated in a single module.
+
+---
+## 🧩 Hybrid Model (Planned)
+
+> Combine BERT embeddings with an SVM classifier:
+
+```python
+from transformers import BertTokenizer, BertModel
+from sklearn.svm import SVC
+
+# Extract BERT embeddings for headlines
+embeddings = get_bert_embeddings(texts)
+
+# Train SVM on those embeddings
+clf = SVC(kernel='linear')
+clf.fit(embeddings, labels)
+```
+
+---
+
+## 🔍 Explainability: LIME / SHAP
+
+- **LIME**: Local Interpretable Model-agnostic Explanations – shows which words influenced classification.
+- **SHAP**: SHapley Additive exPlanations – shows feature contributions per prediction.
+
+> These will be used for model transparency.
 
 ---
 
