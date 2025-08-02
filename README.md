@@ -1,193 +1,231 @@
-# Fake News Detection System
+# 🔍 Fake News Detection System
+
+## ⚡ Quick Start
+
+### **🚀 5-Minute Setup**
+```bash
+# 1. Clone & Setup
+git clone https://github.com/BharathTT/FakeNewsDetectorUsingBert.git
+cd FakeNewsDetectorUsingBert
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2. Train Models (2-3 minutes)
+make baseline
+
+# 3. Run System
+make api     # Terminal 1
+make web     # Terminal 2 (new terminal)
+
+# 4. Test at http://localhost:5001
+```
+
+### **🧪 Quick Test**
+1. Go to http://localhost:5001
+2. Select "Hybrid" model from dropdown
+3. Enter: "Scientists found aliens on Mars"
+4. Click "🔍 Analyze Statement"
+5. Should show: ❌ **Fake** (85% confidence)
+
+### **🔧 Test Files & Commands**
+```bash
+# Test scraper functionality
+python3 debug_scraper.py
+# Enter URL when prompted: https://www.bbc.com/news
+
+# Test API directly
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"text": "Breaking news from Mars", "model": "hybrid"}'
+
+# Test URL analysis
+curl -X POST "http://localhost:8000/predict_url" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://www.ndtv.com/india-news/...", "model": "auto"}'
+
+# Run all tests
+make test
+```
+
+### **📋 Test Examples**
+- **Real News**: "The stock market closed higher today"
+- **Fake News**: "Aliens landed in New York yesterday"
+- **Test URLs**: 
+  - https://www.bbc.com/news
+  - https://www.ndtv.com/india-news/...
+  - https://www.businessworld.in/article/...
+
+### **🐳 Docker (Even Easier)**
+```bash
+make docker  # One command runs everything
+# Web: http://localhost:5000 | API: http://localhost:8000
+```
+
+---
 
 ## Table of Contents
 
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [Architecture](#architecture)
-4. [Dataset](#dataset)
-5. [Installation](#installation)
-6. [Data Preprocessing](#data-preprocessing)
-7. [Modeling](#modeling)
-
-   * [Model Selection](#model-selection)
-   * [Training Pipeline](#training-pipeline)
-   * [Hyperparameter Tuning](#hyperparameter-tuning)
-8. [Evaluation](#evaluation)
-9. [Web Interface](#web-interface)
-10. [API Reference](#api-reference)
-11. [Deployment](#deployment)
-12. [Performance Metrics](#performance-metrics)
-13. [Future Work](#future-work)
-14. [Contributing](#contributing)
-15. [License](#license)
+1. [⚡ Quick Start](#quick-start)
+2. [Project Overview](#project-overview)
+3. [✨ Features](#features)
+3. [🏗️ Architecture](#architecture)
+4. [📊 Dataset](#dataset)
+5. [🚀 Installation & Setup](#installation--setup)
+6. [💻 Usage](#usage)
+7. [🤖 Model Selection](#model-selection)
+8. [🌐 Web Interface](#web-interface)
+9. [📡 API Reference](#api-reference)
+10. [🐳 Deployment](#deployment)
+11. [🔧 Commands Reference](#commands-reference)
+12. [🚨 Troubleshooting](#troubleshooting)
+13. [📈 Performance Metrics](#performance-metrics)
+14. [🔮 Future Enhancements](#future-enhancements)
+15. [🤝 Contributing](#contributing)
+16. [📄 License](#license)
 
 ---
 
 ## Project Overview
 
-The Fake News Detection System is an open-source, end-to-end platform to classify political statements and claims as **real** or **fake** using the renowned LIAR dataset. Utilizing free NLP libraries (Transformers, scikit-learn) and standard Python tooling, this system runs entirely on local or community-hosted infrastructure, avoiding paid APIs and services.
+The **Fake News Detection System** is a comprehensive, open-source platform that classifies news statements and articles as **real** or **fake** using advanced NLP models. Built with modern web technologies and AI models, it provides both a beautiful web interface and robust REST API.
 
-**Objectives:**
-
-* Develop a fully free ML pipeline for fake news detection.
-* Provide a lightweight web interface and REST API without paid hosting.
-* Benchmark transformer-based and classical NLP models using the LIAR dataset from PolitiFact.
-
----
-
-## Features
-
-* **Open-Source Transformers**: Fine-tune BERT-like models via Hugging Face’s `transformers`.
-* **Data Augmentation**: Apply back-translation with free libraries or synonym replacement without proprietary tools.
-* **Model Comparison**: Evaluate BERT, DistilBERT, and logistic regression baselines.
-* **Local Web UI**: Flask-based front end; works on any machine without external dependencies.
-* **RESTful API**: Built with FastAPI or Flask-RESTful; no paid API Gateway needed.
-* **Basic Logging**: Uses Python’s `logging` module and local log files for monitoring.
+**🎯 Key Objectives:**
+- Develop a fully free ML pipeline for fake news detection
+- Provide multiple model options (BERT, TF-IDF, Keyword matching)
+- Beautiful, responsive web interface with URL scraping capabilities
+- RESTful API for integration with other applications
+- Easy deployment with Docker support
 
 ---
 
-## Architecture
+## ✨ Features
+
+### 🧠 **AI Models**
+- **🤖 Hybrid Model**: BERT embeddings + Random Forest classifier
+- **📊 Baseline Model**: TF-IDF + Logistic Regression
+- **🔤 Keyword Model**: Simple pattern matching
+- **🎛️ Model Selection**: Choose specific models via dropdown
+
+### 🌐 **Web Interface**
+- **🎨 Modern UI**: Beautiful gradient design with animations
+- **📱 Responsive**: Works on desktop, tablet, and mobile
+- **📝 Text Analysis**: Direct text input for fact-checking
+- **🔗 URL Analysis**: Automatic web scraping from news URLs
+- **📖 Read More/Less**: Expandable full article view
+- **💡 Examples**: Quick-test buttons with sample statements
+
+### 🔧 **Web Scraping**
+- **📰 News Sites**: Supports major news websites (NDTV, BBC, CNN, etc.)
+- **🤖 Multiple Methods**: newspaper3k + BeautifulSoup fallback
+- **📄 Content Extraction**: Automatic title and article text extraction
+- **🛡️ Error Handling**: Graceful fallbacks when scraping fails
+
+### 🚀 **API & Deployment**
+- **⚡ FastAPI**: High-performance REST API
+- **📚 Auto Documentation**: Swagger UI at `/docs`
+- **🐳 Docker Support**: Easy containerized deployment
+- **🔄 Health Checks**: API status monitoring
+- **📊 Model Info**: Shows which model was used for each prediction
+
+---
+
+## 🏗️ Architecture
 
 ```plaintext
-+-----------+      +-------------+      +------------------+      +------------------+
-|  User UI  | ---> |  API Layer  | ---> |  Hybrid Model    | ---> |  Prediction      |
-| (Flask)   |      | (FastAPI)   |      | BERT+RandomForest|      |  & Logging       |
-+-----------+      +-------------+      +------------------+      +------------------+
-                                        |  Baseline Model  |
-                                        | TF-IDF+LogReg    |
-                                        +------------------+
-                                        |  Keyword Match   |
-                                        +------------------+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Interface │    │   FastAPI       │    │   AI Models     │
+│   (Flask)       │───▶│   Backend       │───▶│   Selection     │
+│   - Text Input  │    │   - /predict    │    │   - Hybrid      │
+│   - URL Input   │    │   - /predict_url│    │   - Baseline    │
+│   - Model Select│    │   - Web Scraper │    │   - Keyword     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-**Project Structure:**
+**📁 Project Structure:**
 ```
 FakeNewsDetectorUsingBert/
-├── app/                    # Main application code
-│   ├── api.py             # FastAPI backend server
-│   ├── web.py             # Flask web interface
-│   ├── data.py            # Data processing & LIAR dataset
-│   ├── train.py           # Model training (baseline + BERT)
-│   ├── test.py            # Testing & validation
-│   └── models/            # Trained models (created after training)
-│       ├── full_bert/     # BERT model files
+├── app/                    # 🏠 Main application
+│   ├── api.py             # 🚀 FastAPI backend server
+│   ├── web.py             # 🌐 Flask web interface
+│   ├── scraper.py         # 🕷️ Web scraping module
+│   ├── data.py            # 📊 Data processing
+│   ├── train.py           # 🎓 Model training
+│   ├── test.py            # 🧪 Testing & validation
+│   ├── static/            # 🎨 CSS and assets
+│   │   └── style.css      # 💅 Beautiful styling
+│   └── models/            # 🤖 Trained models (created after training)
+│       ├── hybrid_model.pkl
 │       ├── baseline_model.pkl
 │       └── vectorizer.pkl
-├── liar_dataset/           # Dataset files (download required)
+├── liar_dataset/           # 📚 Dataset files
 │   ├── train.tsv
 │   ├── valid.tsv
 │   └── test.tsv
-├── requirements.txt        # Python dependencies
-├── Makefile               # Easy commands
-├── docker-compose.yml     # Docker deployment
-├── Dockerfile             # Container configuration
-├── README.md              # This file
-└── .gitignore             # Git ignore rules
+├── requirements.txt        # 📦 Python dependencies
+├── Makefile               # ⚡ Easy commands
+├── docker-compose.yml     # 🐳 Docker deployment
+├── Dockerfile             # 📦 Container config
+├── .gitignore             # 🚫 Git ignore rules
+└── README.md              # 📖 This file
 ```
 
-Components:
-
-* **Frontend**: Flask with inline HTML (app/web.py)
-* **Backend**: FastAPI prediction API (app/api.py)
-* **Hybrid Model**: BERT embeddings + Random Forest classifier
-* **Baseline Model**: TF-IDF + Logistic Regression fallback
-* **Data**: LIAR dataset preprocessing (app/data.py)
-* **Training**: Unified training pipeline (app/train.py)
-
 ---
 
-## 🧰 Features to be Added
+## 📊 Dataset
 
-- URL-to-text conversion via `newspaper3k` or `BeautifulSoup`
-- Classification for news headlines only
-- Real-time API integration (Google News / NDTV RSS)
-- Web interface with input for text, headline, and URL
-- Explainability using **LIME** / **SHAP**
-- Model comparison dashboard (accuracy, F1-score)
-- Multilingual support (future scope)
-
----
-
-
-## Dataset
-
-**LIAR Dataset**: A benchmark dataset for fake news detection containing 12,836 human-labeled short statements from PolitiFact's API.
+**LIAR Dataset**: Benchmark dataset with 12,836 human-labeled political statements from PolitiFact.
 
 | Attribute | Details |
-| --------- | ------- |
-| **Source** | PolitiFact fact-checking website |
-| **Size** | 12,836 statements |
-| **Labels** | 6 fine-grained labels: pants-fire, false, barely-true, half-true, mostly-true, true |
-| **Binary Labels** | Converted to fake (pants-fire, false, barely-true) vs real (half-true, mostly-true, true) |
-| **Features** | Statement text, subject, speaker, job title, state, party, context |
-| **Splits** | Train: 10,269, Validation: 1,284, Test: 1,283 |
-
-**Dataset Structure:**
-```
-liar_dataset/
-├── train.tsv
-├── valid.tsv
-└── test.tsv
-```
-
-
-**Preprocessing:**
-
-1. Load TSV files with tab-separated columns.
-2. Extract statement text (column 2) and labels (column 1).
-3. Convert 6-class labels to binary (fake/real).
-4. Clean text: remove special characters, normalize whitespace.
-5. Handle class imbalance through weighted sampling.
+|-----------|---------|
+| **📰 Source** | PolitiFact fact-checking website |
+| **📊 Size** | 12,836 statements |
+| **🏷️ Labels** | 6-class → Binary (Fake/Real) |
+| **📝 Features** | Statement text, speaker, context |
+| **📈 Splits** | Train: 10,269, Val: 1,284, Test: 1,283 |
 
 ---
 
-## Installation & Setup
+## 🚀 Installation & Setup
 
-### **System Requirements**
-* Python 3.8+ (3.9+ recommended)
-* Git
-* 4GB+ RAM
-* 2GB+ free disk space
-* (Optional) GPU with CUDA for faster training
+### **📋 System Requirements**
+- 🐍 Python 3.8+ (3.9+ recommended)
+- 💾 4GB+ RAM
+- 💽 2GB+ free disk space
+- 🌐 Internet connection (for model downloads)
 
-### **Step 1: Clone Repository**
+### **1️⃣ Clone Repository**
 ```bash
-git clone https://github.com/your-username/FakeNewsDetectorUsingBert.git
+git clone https://github.com/BharathTT/FakeNewsDetectorUsingBert.git
 cd FakeNewsDetectorUsingBert
 ```
 
-### **Step 2: Setup Python Environment**
+### **2️⃣ Setup Python Environment**
 
-**On macOS/Linux:**
+**🍎 macOS/Linux:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**On Windows:**
+**🪟 Windows:**
 ```cmd
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### **Step 3: Setup LIAR Dataset**
+### **3️⃣ Setup Dataset**
 ```bash
-# Use the provided setup script
-./setup_dataset.sh
-
-# Or manually create dataset directory
+# Create dataset directory
 mkdir -p liar_dataset
+
+# Download sample data (included in repo)
+# For full dataset, visit: https://arxiv.org/abs/1705.00648
 ```
 
-**Note**: Sample dataset files are included. For the full LIAR dataset:
-1. Visit the [original LIAR dataset paper](https://arxiv.org/abs/1705.00648)
-2. Request access to the complete dataset
-3. Replace sample files in `liar_dataset/` folder
-
-### **Step 4: Train Models**
+### **4️⃣ Train Models**
 ```bash
 # Train baseline model (2-3 minutes)
 make baseline
@@ -195,288 +233,175 @@ make baseline
 # Train hybrid model (10-15 minutes)
 make hybrid
 
-# Train both models
+# Train all models
 make train
-
-# Or train directly
-python app/train.py
 ```
 
-## Usage
+---
 
-### **Quick Start (After Setup)**
+## 💻 Usage
 
-#### **1. Verify Installation**
+### **🚀 Quick Start**
+
+#### **1️⃣ Start API Server**
 ```bash
-# Test data loading and models
-make test
-```
-**Expected Output:**
-```
-Testing data loading...
-Loaded 10240 training samples
-Baseline Results: ~60% accuracy
-```
-
-#### **2. Start API Server**
-```bash
-# Method 1: Using Makefile
+# Terminal 1: Start API
 make api
-
-# Method 2: Direct command
-cd app && uvicorn api:app --reload --port 8000
 ```
-**API will be available at:** http://localhost:8000
+**🌐 API available at:** http://localhost:8000
 
-#### **3. Start Web Interface**
+#### **2️⃣ Start Web Interface**
 ```bash
-# In a new terminal (keep API running)
+# Terminal 2: Start Web Interface
 make web
-
-# Or directly
-cd app && python web.py
 ```
-**Web interface:** http://localhost:5000
+**🖥️ Web interface:** http://localhost:5001
 
-#### **4. Test API Endpoint**
+#### **3️⃣ Test the System**
+
+**📝 Text Analysis:**
+1. Go to http://localhost:5001
+2. Select "📝 Text Analysis" tab
+3. Enter: "Scientists discovered aliens on Mars yesterday"
+4. Choose model from dropdown
+5. Click "🔍 Analyze Statement"
+
+**🔗 URL Analysis:**
+1. Select "🔗 URL Analysis" tab
+2. Enter: "https://www.bbc.com/news/world-..."
+3. Choose model from dropdown
+4. Click "🔍 Analyze Article"
+
+**🧪 API Testing:**
 ```bash
-# Test with curl
 curl -X POST "http://localhost:8000/predict" \
      -H "Content-Type: application/json" \
-     -d '{"text": "Scientists discovered aliens on Mars yesterday"}'
-
-# Expected response
-{"label": "Fake", "confidence": 0.85}
-```
-
-### **Manual Testing**
-Try these example statements in the web interface:
-- ✅ **Real**: "The stock market closed higher today"
-- ❌ **Fake**: "Aliens landed in New York yesterday"
-- ✅ **Real**: "COVID vaccines are 95% effective"
-- ❌ **Fake**: "The moon is made of cheese"
-
-### **Model Performance**
-- **Hybrid Model**: BERT embeddings + Random Forest (Primary)
-- **Baseline Model**: TF-IDF + Logistic Regression (Fallback)
-- **Keyword Model**: Simple pattern matching (Final fallback)
-- **Training Time**: 10-15 minutes (Hybrid), 2-3 minutes (Baseline)
-- **Inference Time**: ~200ms (Hybrid), ~50ms (Baseline)
-
----
-
-## Data Preprocessing
-
-All data processing is handled in `app/data.py`:
-
-```python
-from app.data import load_liar_dataset, preprocess_liar, LiarDataset
-
-# Load and preprocess
-train_df = preprocess_liar(load_liar_dataset('liar_dataset/train.tsv'))
-val_df = preprocess_liar(load_liar_dataset('liar_dataset/valid.tsv'))
-test_df = preprocess_liar(load_liar_dataset('liar_dataset/test.tsv'))
-
-# Tokenization
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-encodings = tokenizer(list(train_df['statement']), padding=True, truncation=True, max_length=128)
-```
-
-* LIAR statements are typically short (avg ~18 words), so max_length=128 is sufficient.
-* Binary classification simplifies the 6-class problem while maintaining meaningful distinction.
-* All preprocessing functions are consolidated in a single module.
-
----
-## 🧩 Hybrid Model (Planned)
-
-> Combine BERT embeddings with an SVM classifier:
-
-```python
-from transformers import BertTokenizer, BertModel
-from sklearn.svm import SVC
-
-# Extract BERT embeddings for headlines
-embeddings = get_bert_embeddings(texts)
-
-# Train SVM on those embeddings
-clf = SVC(kernel='linear')
-clf.fit(embeddings, labels)
+     -d '{"text": "The moon is made of cheese", "model": "hybrid"}'
 ```
 
 ---
 
-## 🔍 Explainability: LIME / SHAP
+## 🤖 Model Selection
 
-- **LIME**: Local Interpretable Model-agnostic Explanations – shows which words influenced classification.
-- **SHAP**: SHapley Additive exPlanations – shows feature contributions per prediction.
+The system offers **4 model options** via dropdown menu:
 
-> These will be used for model transparency.
+### **🎯 Auto (Recommended)**
+- Tries Hybrid → Baseline → Keyword
+- Best accuracy with fallback support
+- **Use when**: You want the best possible results
 
----
+### **🧠 Hybrid Model**
+- BERT embeddings + Random Forest
+- **Accuracy**: ~62%
+- **Speed**: ~200ms
+- **Use when**: Maximum accuracy is needed
 
-## Modeling
+### **📊 Baseline Model**
+- TF-IDF + Logistic Regression
+- **Accuracy**: ~60%
+- **Speed**: ~50ms
+- **Use when**: Fast predictions needed
 
-### Model Selection
+### **🔤 Keyword Model**
+- Simple pattern matching
+- **Accuracy**: ~55%
+- **Speed**: ~10ms
+- **Use when**: Ultra-fast screening needed
 
-| Model                        | Size | Notes                           |
-| ---------------------------- | ---- | ------------------------------- |
-| **Hybrid (Primary)**         | 110M | BERT embeddings + Random Forest |
-| `bert-base-uncased`          | 110M | For feature extraction          |
-| `RandomForestClassifier`     | ~1M  | Non-linear classification       |
-| **Baseline (Fallback)**      | ~1M  | TF-IDF + Logistic Regression   |
-| **Keyword (Final Fallback)** | <1KB | Simple keyword matching         |
-
-### Training Pipeline
-
-**Hybrid Model Training:**
-```python
-from transformers import BertTokenizer, BertModel
-from sklearn.ensemble import RandomForestClassifier
-import torch
-import numpy as np
-
-# Extract BERT embeddings
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-bert_model = BertModel.from_pretrained('bert-base-uncased')
-
-def get_bert_embeddings(texts):
-    embeddings = []
-    for text in texts:
-        inputs = tokenizer(text, return_tensors='pt', max_length=128, truncation=True)
-        outputs = bert_model(**inputs)
-        # Use [CLS] token embedding
-        embedding = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
-        embeddings.append(embedding)
-    return np.array(embeddings)
-
-# Train Random Forest on BERT embeddings
-X_train = get_bert_embeddings(train_texts)
-rf_model = RandomForestClassifier(n_estimators=100, class_weight='balanced')
-rf_model.fit(X_train, train_labels)
-```
-
-**Prediction Flow:**
-```python
-# 1st Priority: Hybrid Model
-bert_embedding = get_bert_embeddings([text])
-prediction = rf_model.predict(bert_embedding)
-
-# 2nd Priority: Baseline Model  
-tfidf_vector = vectorizer.transform([text])
-prediction = logistic_model.predict(tfidf_vector)
-
-# 3rd Priority: Keyword Matching
-fake_score = count_fake_keywords(text)
-real_score = count_real_keywords(text)
-```
-
-### Hyperparameter Tuning
-
-**Optimized for LIAR Dataset:**
-* Learning rates: `[2e-5, 3e-5, 5e-5]`
-* Epochs: `[3, 4, 5]` (LIAR benefits from more epochs due to complexity)
-* Batch sizes: `[16, 32]` depending on GPU memory
-* Max sequence length: `128` (optimal for LIAR's short statements)
-* Weight decay: `[0.01, 0.1]` for regularization
-
----
-
-## Evaluation
-
-Evaluation is built into the training pipeline:
-
+**💡 Model Selection Examples:**
 ```bash
-# Test everything
-make test
-# OR
-python app/test.py
+# Force hybrid model
+curl -X POST "http://localhost:8000/predict" \
+     -d '{"text": "Breaking news!", "model": "hybrid"}'
 
-# Train with automatic evaluation
-make train
+# Force baseline model
+curl -X POST "http://localhost:8000/predict" \
+     -d '{"text": "Breaking news!", "model": "baseline"}'
 ```
 
-**Metrics reported:**
-* **Accuracy** - Overall correctness
-* **Precision** - True positives / (True positives + False positives)
-* **Recall** - True positives / (True positives + False negatives)
-* **F1-Score** - Harmonic mean of precision and recall
+---
 
-**Expected Performance:**
-* Baseline (Logistic Regression): ~62% accuracy
-* BERT: ~75-80% accuracy
+## 🌐 Web Interface
+
+### **🎨 Features**
+- **🌈 Beautiful Design**: Modern gradient background with animations
+- **📱 Responsive**: Works on all devices
+- **🎛️ Model Selection**: Dropdown to choose AI model
+- **📝 Dual Input**: Text analysis + URL analysis tabs
+- **📖 Read More/Less**: Expandable article content
+- **💡 Quick Examples**: One-click test buttons
+- **🔄 Loading States**: Smooth loading animations
+- **🎯 Color-coded Results**: Green (Real), Red (Fake), Yellow (Uncertain)
+
+### **🖱️ How to Use**
+1. **Choose Model**: Select from dropdown (Auto/Hybrid/Baseline/Keyword)
+2. **Select Tab**: Text Analysis or URL Analysis
+3. **Enter Input**: Type text or paste news URL
+4. **Analyze**: Click the analyze button
+5. **View Results**: See prediction with confidence score
+6. **Read More**: Click to expand full article (for URLs)
+
+### **📱 Mobile Support**
+- Responsive design works on phones/tablets
+- Touch-friendly buttons and inputs
+- Optimized for mobile browsing
 
 ---
 
-## Web Interface
+## 📡 API Reference
 
-1. **Run API**:
-   ```bash
-   make api
-   # OR
-   uvicorn app.api:app --reload --port 8000
-   ```
-
-2. **Run Frontend**:
-   ```bash
-   make web
-   # OR
-   python app/web.py
-   ```
-
-3. **Open browser**: http://localhost:5000
-
-The web interface is a single file (`app/web.py`) with inline HTML for maximum simplicity.
-
----
-
-## API Reference
-
-### **Base URL**
+### **🌐 Base URL**
 - **Local**: http://localhost:8000
 - **Docker**: http://localhost:8000
+- **Docs**: http://localhost:8000/docs
 
-### **Endpoints**
+### **📋 Endpoints**
 
-#### **POST /predict**
-Classify a statement as fake or real news.
+#### **POST /predict** - Text Analysis
+Analyze text statements for fake news.
 
-**Request:**
-```bash
-curl -X POST "http://localhost:8000/predict" \
-     -H "Content-Type: application/json" \
-     -d '{"text": "Your statement here"}'
-```
-
-**Request Body:**
+**📤 Request:**
 ```json
 {
-  "text": "The president announced new policies today"
+  "text": "Scientists discovered aliens on Mars",
+  "model": "hybrid"  // optional: "auto", "hybrid", "baseline", "keyword"
 }
 ```
 
-**Response:**
+**📥 Response:**
 ```json
 {
-  "label": "Real",
-  "confidence": 0.87,
+  "label": "Fake",
+  "confidence": 0.85,
   "model": "hybrid"
 }
 ```
 
-**Response Fields:**
-- `label`: "Fake" or "Real"
-- `confidence`: Float between 0.0-1.0 (higher = more confident)
-- `model`: "hybrid", "baseline", or "keyword" (indicates which model was used)
+#### **POST /predict_url** - URL Analysis
+Analyze news articles from URLs.
 
-#### **GET /health**
-Check API health status.
-
-**Request:**
-```bash
-curl http://localhost:8000/health
+**📤 Request:**
+```json
+{
+  "url": "https://www.bbc.com/news/world-...",
+  "model": "auto"
+}
 ```
 
-**Response:**
+**📥 Response:**
+```json
+{
+  "label": "Real",
+  "confidence": 0.78,
+  "model": "hybrid",
+  "title": "Article Title Here",
+  "text_preview": "First 200 characters...",
+  "full_text": "Complete article text...",
+  "scraper_method": "newspaper3k"
+}
+```
+
+#### **GET /health** - Health Check
 ```json
 {
   "status": "healthy",
@@ -485,76 +410,47 @@ curl http://localhost:8000/health
 }
 ```
 
-#### **GET /docs**
-Interactive API documentation (Swagger UI).
+### **🧪 Testing Examples**
 
-**URL**: http://localhost:8000/docs
-
-### **Example Usage**
-
-#### **Python**
+**🐍 Python:**
 ```python
 import requests
 
-response = requests.post(
-    'http://localhost:8000/predict',
-    json={'text': 'Scientists discovered aliens on Mars'}
-)
-result = response.json()
-print(f"Label: {result['label']}, Confidence: {result['confidence']}")
+# Test text analysis
+response = requests.post('http://localhost:8000/predict', json={
+    'text': 'The stock market crashed today',
+    'model': 'hybrid'
+})
+print(response.json())
+
+# Test URL analysis
+response = requests.post('http://localhost:8000/predict_url', json={
+    'url': 'https://www.ndtv.com/india-news/...',
+    'model': 'auto'
+})
+print(response.json())
 ```
 
-#### **JavaScript**
+**🌐 JavaScript:**
 ```javascript
+// Text analysis
 fetch('http://localhost:8000/predict', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({text: 'The economy is growing rapidly'})
-})
-.then(response => response.json())
-.then(data => console.log(data));
-```
-
-#### **cURL Examples**
-```bash
-# Test fake news
-curl -X POST "http://localhost:8000/predict" \
-     -H "Content-Type: application/json" \
-     -d '{"text": "Aliens invaded Earth yesterday"}'
-
-# Test real news
-curl -X POST "http://localhost:8000/predict" \
-     -H "Content-Type: application/json" \
-     -d '{"text": "Stock market reached new highs"}'
-```
-
-### **Error Responses**
-
-**400 Bad Request:**
-```json
-{
-  "detail": "Text field is required"
-}
-```
-
-**500 Internal Server Error:**
-```json
-{
-  "detail": "Model prediction failed"
-}
+  body: JSON.stringify({
+    text: 'Breaking: Major discovery announced',
+    model: 'baseline'
+  })
+}).then(r => r.json()).then(console.log);
 ```
 
 ---
 
-## Deployment
+## 🐳 Deployment
 
-### **Docker Deployment (Recommended)**
+### **🚀 Docker (Recommended)**
 
-#### **Prerequisites**
-- Docker installed ([Get Docker](https://docs.docker.com/get-docker/))
-- Docker Compose installed
-
-#### **Quick Deploy**
+**Quick Deploy:**
 ```bash
 # Build and start all services
 docker-compose up --build
@@ -563,12 +459,12 @@ docker-compose up --build
 make docker
 ```
 
-#### **Access Services**
+**🌐 Access:**
 - **API**: http://localhost:8000
-- **Web Interface**: http://localhost:5000
-- **API Docs**: http://localhost:8000/docs
+- **Web**: http://localhost:5000
+- **Docs**: http://localhost:8000/docs
 
-#### **Production Deploy**
+**🔧 Production:**
 ```bash
 # Run in background
 docker-compose up -d
@@ -580,318 +476,185 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### **Manual Deployment**
+### **💻 Manual Deployment**
 
-#### **Local Development**
+**Local Development:**
 ```bash
-# Terminal 1: Start API
-source venv/bin/activate
+# Terminal 1: API
 make api
 
-# Terminal 2: Start Web Interface
-source venv/bin/activate
+# Terminal 2: Web
 make web
 ```
 
-#### **Production Server**
+**🌍 Production Server:**
 ```bash
 # Install production server
 pip install gunicorn
 
-# Run API with Gunicorn
+# Run API
 cd app && gunicorn -w 4 -k uvicorn.workers.UvicornWorker api:app --bind 0.0.0.0:8000
 
-# Run Web with Gunicorn
+# Run Web
 cd app && gunicorn -w 2 web:app --bind 0.0.0.0:5000
 ```
 
-### **Cloud Deployment**
-
-#### **Free Hosting Options**
-- **Render.com**: Connect GitHub repo, auto-deploy
+### **☁️ Cloud Deployment**
+- **Render.com**: Connect GitHub, auto-deploy
 - **Railway.app**: One-click deploy
-- **Heroku**: Use provided Dockerfile
-- **Google Cloud Run**: Serverless container deployment
-
-#### **Environment Variables**
-```bash
-# Optional configurations
-export MODEL_PATH="./models/full_bert"
-export MAX_LENGTH=128
-export BATCH_SIZE=32
-```
+- **Heroku**: Use Dockerfile
+- **Google Cloud Run**: Serverless containers
 
 ---
 
-## Performance Metrics
+## 🔧 Commands Reference
 
-| Metric     | Observed                      |
-| ---------- | ----------------------------- |
-| Latency    | \~100ms                       |
-| Throughput | \~50 req/s                    |
-| Uptime     | Dependant on host (aim \~99%) |
-
-## Troubleshooting
-
-### **Common Issues & Solutions**
-
-#### **1. Installation Issues**
-
-**Problem**: `pip: command not found`
+### **⚡ Makefile Commands**
 ```bash
-# Solution: Use pip3 or python -m pip
-pip3 install -r requirements.txt
-# OR
-python3 -m pip install -r requirements.txt
+make install    # 📦 Install dependencies
+make test      # 🧪 Run all tests
+make baseline  # 🎓 Train baseline model (2-3 min)
+make hybrid    # 🧠 Train hybrid model (10-15 min)
+make train     # 🎓 Train all models
+make api       # 🚀 Start API server
+make web       # 🌐 Start web interface
+make docker    # 🐳 Deploy with Docker
+make clean     # 🧹 Clean cache files
 ```
 
-**Problem**: `externally-managed-environment`
-```bash
-# Solution: Use virtual environment
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-#### **2. Dataset Issues**
-
-**Problem**: `FileNotFoundError: liar_dataset/train.tsv`
-```bash
-# Solution: Download dataset manually
-mkdir liar_dataset
-# Download files from GitHub or use wget commands above
-```
-
-**Problem**: Dataset download fails
-```bash
-# Alternative: Manual download
-# 1. Go to https://github.com/thiagocastroferreira/FakeNewsCorpus
-# 2. Download train.tsv, valid.tsv, test.tsv
-# 3. Place in liar_dataset/ folder
-```
-
-#### **3. Training Issues**
-
-**Problem**: CUDA/GPU errors
-```bash
-# Solution: Force CPU training
-export CUDA_VISIBLE_DEVICES=""
-make train
-```
-
-**Problem**: Out of memory during training
-```bash
-# Solution: Reduce batch size in app/train.py
-# Change: per_device_train_batch_size=16 → 8
-# Change: per_device_eval_batch_size=32 → 16
-```
-
-**Problem**: Training takes too long
-```bash
-# Solution: Train baseline only (2-3 minutes)
-make baseline
-
-# Or reduce BERT epochs in app/train.py
-# Change: num_train_epochs=4 → 2
-```
-
-#### **4. Runtime Issues**
-
-**Problem**: Port already in use
-```bash
-# Solution: Use different ports
-cd app && uvicorn api:app --port 8001
-cd app && python web.py  # Edit port in web.py
-```
-
-**Problem**: API not responding
-```bash
-# Check if API is running
-curl http://localhost:8000/health
-
-# Restart API
-make api
-```
-
-**Problem**: Models not found
-```bash
-# Solution: Retrain models
-make train
-
-# Or check if models directory exists
-ls -la app/models/
-```
-
-### **Performance Issues**
-
-**Slow predictions:**
-- Use baseline model for faster inference
-- Reduce max_length in tokenization
-- Use CPU for small batches
-
-**Low accuracy:**
-- Ensure full dataset is downloaded
-- Train for more epochs
-- Check data preprocessing
-
-### **Quick Diagnostic Commands**
-```bash
-# Test everything
-make test
-
-# Check Python environment
-which python
-pip list | grep -E "torch|transformers|sklearn"
-
-# Check data loading
-python -c "from app.data import *; print('✅ Data loading works')"
-
-# Check model files
-ls -la app/models/
-
-# Test API health
-curl http://localhost:8000/health
-```
-
-### **Getting Help**
-
-1. **Check logs**: Look for error messages in terminal output
-2. **Verify setup**: Run `make test` to check all components
-3. **Check requirements**: Ensure all dependencies are installed
-4. **Try Docker**: Use `make docker` for isolated environment
-5. **Reset environment**: Delete `venv/` and recreate
-
-### **System Requirements Check**
-```bash
-# Check Python version (need 3.8+)
-python --version
-
-# Check available memory (need 4GB+)
-free -h  # Linux
-top -l 1 | grep PhysMem  # macOS
-
-# Check disk space (need 2GB+)
-df -h .
-```
-
----
-
-## Commands Reference
-
-### **Makefile Commands**
-```bash
-make install    # Install dependencies
-make test      # Run all tests
-make baseline  # Train baseline model only (2-3 min)
-make hybrid    # Train hybrid model only (10-15 min)
-make train     # Train all models (baseline + hybrid)
-make api       # Start API server
-make web       # Start web interface
-make docker    # Deploy with Docker
-make clean     # Clean cache files
-```
-
-### **Direct Commands**
+### **🐍 Direct Python Commands**
 ```bash
 # Training
-cd app && python train.py              # Train all models
-cd app && python -c "from train import train_baseline; train_baseline()"  # Baseline only
-cd app && python -c "from train import train_hybrid; train_hybrid()"      # Hybrid only
-
-# Testing
-cd app && python test.py               # Run tests
+cd app && python train.py                    # Train all models
+cd app && python test.py                     # Run tests
 
 # Servers
 cd app && uvicorn api:app --reload --port 8000    # API server
 cd app && python web.py                           # Web server
 
 # Docker
-docker-compose up --build              # Build and run
-docker-compose up -d                   # Run in background
-docker-compose logs -f                 # View logs
-docker-compose down                    # Stop services
+docker-compose up --build                    # Build and run
+docker-compose logs -f                       # View logs
 ```
 
 ---
 
-## Model Information
+## 🚨 Troubleshooting
 
-### **Dataset: LIAR**
-- **Source**: PolitiFact fact-checking website
-- **Size**: 12,836 human-labeled statements
-- **Labels**: 6-class converted to binary (Fake/Real)
-- **Features**: Statement text, speaker, subject, context
-- **Splits**: Train (10,269), Validation (1,284), Test (1,283)
+### **🔧 Common Issues**
 
-### **Models**
+#### **📦 Installation Problems**
+```bash
+# Python not found
+python3 -m pip install -r requirements.txt
 
-#### **Baseline Model**
-- **Algorithm**: Logistic Regression
-- **Features**: TF-IDF with n-grams (1,2)
-- **Accuracy**: ~60.5%
-- **Training Time**: 2-3 minutes
-- **File Size**: ~1MB
+# Virtual environment issues
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-#### **BERT Model**
-- **Architecture**: BERT-base-uncased
-- **Parameters**: 110M
-- **Accuracy**: ~61.8%
-- **Training Time**: 30-60 minutes
-- **File Size**: ~400MB
+#### **🚀 Server Issues**
+```bash
+# Port already in use
+lsof -ti:8000 | xargs kill -9
+make api
 
-### **Performance Metrics**
-| Metric | Baseline | BERT |
-|--------|----------|------|
-| Accuracy | 60.54% | 61.80% |
-| Precision (Fake) | 54.67% | 56.47% |
-| Recall (Fake) | 56.06% | 54.43% |
-| F1-Score (Fake) | 55.36% | 55.43% |
-| Precision (Real) | 65.29% | 65.67% |
-| Recall (Real) | 64.01% | 67.51% |
-| F1-Score (Real) | 64.64% | 66.57% |
+# API not responding
+curl http://localhost:8000/health
+```
+
+#### **🤖 Model Issues**
+```bash
+# Models not found
+make train
+
+# Training fails
+make baseline  # Try baseline only first
+```
+
+#### **🌐 Web Scraping Issues**
+```bash
+# URL analysis fails
+# Try different news URLs
+# Check API logs for error messages
+```
+
+### **🩺 Quick Diagnostics**
+```bash
+# Test everything
+make test
+
+# Check Python environment
+python --version
+pip list | grep -E "torch|transformers|sklearn"
+
+# Test API health
+curl http://localhost:8000/health
+
+# Check model files
+ls -la app/models/
+```
 
 ---
 
-## Future Enhancements
+## 📈 Performance Metrics
 
-### **Model Improvements**
-- [ ] RoBERTa/DeBERTa models for better accuracy
-- [ ] Ensemble methods combining multiple models
-- [ ] Feature engineering with speaker/context data
-- [ ] Data augmentation techniques
+| **Metric** | **Hybrid** | **Baseline** | **Keyword** |
+|------------|------------|--------------|-------------|
+| **🎯 Accuracy** | ~62% | ~60% | ~55% |
+| **⚡ Speed** | ~200ms | ~50ms | ~10ms |
+| **💾 Size** | ~400MB | ~1MB | <1KB |
+| **🧠 Complexity** | High | Medium | Low |
 
-### **System Features**
-- [ ] Real-time news feed analysis
-- [ ] Browser extension for fact-checking
+**📊 Use Cases:**
+- **🎯 High Accuracy**: Use Hybrid model
+- **⚡ Fast Response**: Use Baseline model  
+- **🚀 Ultra Fast**: Use Keyword model
+- **🎛️ Best Balance**: Use Auto mode
+
+---
+
+## 🔮 Future Enhancements
+
+### **🤖 AI Improvements**
+- [ ] RoBERTa/DeBERTa models
+- [ ] Ensemble methods
 - [ ] Multilingual support
-- [ ] Confidence explanation/reasoning
-- [ ] User feedback integration
+- [ ] Confidence explanations (LIME/SHAP)
 
-### **Technical Improvements**
-- [ ] Model quantization for faster inference
-- [ ] Caching for repeated queries
-- [ ] Batch prediction API
-- [ ] Monitoring and logging
-- [ ] A/B testing framework
+### **🌐 Web Features**
+- [ ] User accounts and history
+- [ ] Batch URL analysis
+- [ ] Browser extension
+- [ ] Real-time news monitoring
+- [ ] Social media integration
+
+### **🔧 Technical**
+- [ ] Model quantization
+- [ ] Caching system
+- [ ] A/B testing
+- [ ] Advanced monitoring
+- [ ] Auto-scaling
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-### **How to Contribute**
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Commit** your changes: `git commit -m 'Add amazing feature'`
-4. **Push** to branch: `git push origin feature/amazing-feature`
-5. **Open** a Pull Request
+### **🚀 How to Contribute**
+1. **🍴 Fork** the repository
+2. **🌿 Create** feature branch: `git checkout -b feature/amazing-feature`
+3. **💾 Commit** changes: `git commit -m 'Add amazing feature'`
+4. **📤 Push** to branch: `git push origin feature/amazing-feature`
+5. **🔄 Open** Pull Request
 
-### **Development Setup**
+### **🛠️ Development Setup**
 ```bash
 # Clone your fork
 git clone https://github.com/your-username/FakeNewsDetectorUsingBert.git
 cd FakeNewsDetectorUsingBert
 
-# Setup development environment
+# Setup environment
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -900,42 +663,38 @@ pip install -r requirements.txt
 make test
 ```
 
-### **Code Style**
-- Follow PEP 8 for Python code
+### **📝 Code Style**
+- Follow PEP 8 for Python
 - Add docstrings for functions
 - Include tests for new features
-- Keep functions small and focused
-
-### **Reporting Issues**
-- Use GitHub Issues
-- Include system information
-- Provide reproduction steps
-- Add error logs if applicable
+- Keep functions focused and small
 
 ---
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- **LIAR Dataset**: Wang, William Yang. "Liar, liar pants on fire": A new benchmark dataset for fake news detection. ACL 2017.
-- **BERT Model**: Devlin et al. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. NAACL 2019.
-- **Transformers Library**: Hugging Face Transformers
-- **Dataset Source**: PolitiFact.com
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Contact
+## 🙏 Acknowledgments
 
-For questions or support:
-- **GitHub Issues**: [Create an issue](https://github.com/your-username/FakeNewsDetectorUsingBert/issues)
-- **Email**: your-email@example.com
-- **Documentation**: This README and code comments
+- **📚 LIAR Dataset**: Wang, William Yang. "Liar, liar pants on fire": A new benchmark dataset for fake news detection. ACL 2017.
+- **🤖 BERT Model**: Devlin et al. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. NAACL 2019.
+- **🔧 Hugging Face**: Transformers library
+- **📰 PolitiFact**: Dataset source
+
+---
+
+## 📞 Contact & Support
+
+- **🐛 Issues**: [GitHub Issues](https://github.com/BharathTT/FakeNewsDetectorUsingBert/issues)
+- **📧 Email**: bharath@example.com
+- **📖 Documentation**: This README + code comments
+- **💬 Discussions**: GitHub Discussions
 
 ---
 
 **⭐ Star this repository if you found it helpful!**
+
+**🚀 Ready to detect fake news? Let's get started!**

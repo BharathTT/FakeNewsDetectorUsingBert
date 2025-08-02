@@ -169,10 +169,10 @@ app/models/
 *.pth
 *.pt
 
-# Test files
-test_*.py
-debug_*.py
-FLOW.md
+# Test files (commented out to include in repo)
+# test_*.py
+# debug_*.py
+# FLOW.md
 
 # Dataset files
 liar_dataset/
