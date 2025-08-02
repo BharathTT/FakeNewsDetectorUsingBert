@@ -125,17 +125,6 @@ liar_dataset/
 └── test.tsv
 ```
 
-## 🧠 Algorithms Used
-
-- Logistic Regression
-- Random Forest
-- Multinomial Naive Bayes
-- Support Vector Machine (SVM)
-- BERT (Bidirectional Encoder Representations from Transformers)
-- SVM + BERT embedding (hybrid approach planned)
-
----
-
 
 **Preprocessing:**
 
