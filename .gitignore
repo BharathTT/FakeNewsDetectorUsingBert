@@ -175,10 +175,10 @@ app/models/
 # FLOW.md
 
 # Dataset files
-liar_dataset/
-*.tsv
-*.csv
-*.json
+# liar_dataset/
+# *.tsv
+# *.csv
+# *.json
 
 # Logs
 *.log
