@@ -10,6 +10,8 @@ def load_liar_dataset(file_path):
 def preprocess_liar(df):
     fake_labels = ['pants-fire', 'false', 'barely-true']
     df['binary_label'] = df['label'].apply(lambda x: 0 if x in fake_labels else 1)
+    # Convert to string and handle nulls
+    df['statement'] = df['statement'].astype(str).fillna('')
     df['statement'] = df['statement'].str.replace(r'[^\w\s]', ' ', regex=True)
     df['statement'] = df['statement'].str.replace(r'\s+', ' ', regex=True).str.strip()
     return df[['statement', 'binary_label']].dropna()

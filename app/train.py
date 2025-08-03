@@ -26,10 +26,7 @@ def train_baseline():
     
     # Improved TF-IDF with better parameters
     vectorizer = TfidfVectorizer(
-        max_features=10000,
-        ngram_range=(1, 2),  # Include bigrams
-        min_df=2,
-        max_df=0.95,
+        max_features=5000,
         stop_words='english'
     )
     X_train = vectorizer.fit_transform(train_df['statement'])

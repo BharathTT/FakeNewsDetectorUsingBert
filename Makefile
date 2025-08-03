@@ -7,19 +7,19 @@ test:
 	cd app && python3 test.py
 
 baseline:
-	cd app && python3 -c "from train import train_baseline; train_baseline()"
+	cd app && python -c "from train import train_baseline; train_baseline()"
 
 hybrid:
-	cd app && python3 -c "from train import train_hybrid; train_hybrid()"
+	cd app && python -c "from train import train_hybrid; train_hybrid()"
 
 train:
-	cd app && python3 train.py
+	cd app && python train.py
 
 api:
 	cd app && uvicorn api:app --reload --port 8000
 
 web:
-	cd app && python3 web.py
+	cd app && python web.py
 
 docker:
 	docker-compose up
