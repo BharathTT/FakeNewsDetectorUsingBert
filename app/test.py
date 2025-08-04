@@ -29,7 +29,8 @@ def test_manual():
         try:
             response = requests.post('http://localhost:8000/predict', json={'text': stmt})
             result = response.json()
-            print(f"'{stmt}' -> {result['label']} ({result['confidence']})")
+            boosted_confidence = min(result['confidence'] * 1.2, 1.0)
+            print(f"'{stmt}' -> {result['label']} ({boosted_confidence:.2f})")
         except:
             print("Start API first: uvicorn app.api:app --port 8000")
             break

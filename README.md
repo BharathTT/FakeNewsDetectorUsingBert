@@ -121,8 +121,8 @@ The **Fake News Detection System** is a comprehensive, open-source platform that
 - **📄 Content Extraction**: Automatic title and article text extraction
 - **🛡️ Error Handling**: Graceful fallbacks when scraping fails
 
-### 🚀 **API & Deployment**
-- **⚡ FastAPI**: High-performance REST API
+### **API & Deployment**
+- **FastAPI**: High-performance REST API
 - **📚 Auto Documentation**: Swagger UI at `/docs`
 - **🐳 Docker Support**: Easy containerized deployment
 - **🔄 Health Checks**: API status monitoring
