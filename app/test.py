@@ -24,7 +24,7 @@ def test_manual():
         "Scientists discovered aliens living on Mars",
         "The stock market closed higher today"
     ]
-    
+     
     for stmt in statements:
         try:
             response = requests.post('http://localhost:8000/predict', json={'text': stmt})

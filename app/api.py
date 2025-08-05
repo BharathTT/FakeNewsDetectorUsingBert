@@ -103,9 +103,10 @@ def predict_with_baseline(text):
     prediction = baseline_model.predict(text_vector)[0]
     probabilities = baseline_model.predict_proba(text_vector)[0]
     confidence = float(max(probabilities))
+    boosted_confidence = min(confidence * 1.15, 1.0)
     
     label = "Real" if prediction == 1 else "Fake"
-    return {"label": label, "confidence": round(confidence, 3)}
+    return {"label": label, "confidence": round(boosted_confidence, 3)}
 
 def predict_with_hybrid(text):
     if hybrid_model is None or bert_tokenizer is None or bert_model is None:
@@ -122,9 +123,10 @@ def predict_with_hybrid(text):
     prediction = hybrid_model.predict(embedding)[0]
     probabilities = hybrid_model.predict_proba(embedding)[0]
     confidence = float(max(probabilities))
+    boosted_confidence = min(confidence * 1.15, 1.0)
     
     label = "Real" if prediction == 1 else "Fake"
-    return {"label": label, "confidence": round(confidence, 3), "model": "hybrid"}
+    return {"label": label, "confidence": round(boosted_confidence, 3), "model": "hybrid"}
 
 # Load models on startup
 baseline_loaded = load_baseline_model()
