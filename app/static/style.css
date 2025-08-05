@@ -157,6 +157,7 @@ button:active {
     transition: all 0.3s;
     margin: 0;
     border-radius: 0;
+    color: black;
 }
 
 .tab-btn.active {
